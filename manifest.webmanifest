@@ -1,0 +1,20 @@
+{
+  "name": "بيت",
+  "short_name": "بيت",
+  "description": "إدارة مصاريف وميزانية العائلة",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f7f6f2",
+  "theme_color": "#176b53",
+  "icons": [
+    {
+      "src": "https://cdn.shopify.com/s/files/1/0739/2205/2198/files/icons8-mortgage-50.png?v=1788716794",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
