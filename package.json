@@ -1,0 +1,18 @@
+{
+  "name": "bayt-household",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Arabic household expense app and Supabase database",
+  "scripts": {
+    "build:sql": "node scripts/build-sql.mjs",
+    "test": "node --test tests/supabase-database.test.mjs",
+    "test:browser": "node tests/browser-smoke.mjs"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.4.1"
+  },
+  "dependencies": {
+    "@supabase/server": "^1.5.3",
+    "@supabase/supabase-js": "^2.115.0"
+  }
+}

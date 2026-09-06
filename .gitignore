@@ -1,0 +1,10 @@
+.browser-test*/
+artifacts/
+node_modules/
+.npm-cache/
+.env
+.env.*
+!.env.example
+supabase/config.js
+supabase/.temp/
+supabase/.branches/
