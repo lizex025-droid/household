@@ -5,41 +5,266 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#176b53">
   <meta name="description" content="بيت — مساحة واحدة لإدارة مصاريف العائلة وميزانيتها.">
+
   <title>بيت | مصاريف أقل، راحة أكثر</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='11' fill='%23176b53'/%3E%3Cpath d='M9 18 20 9l11 9v13h-8v-9h-6v9H9Z' fill='none' stroke='white' stroke-width='2'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&amp;display=swap" media="print" onload="this.media='all'">
+
+  <link
+    rel="icon"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='11' fill='%23176b53'/%3E%3Cpath d='M9 18 20 9l11 9v13h-8v-9h-6v9H9Z' fill='none' stroke='white' stroke-width='2'/%3E%3C/svg%3E"
+  >
+
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&amp;display=swap"
+    media="print"
+    onload="this.media='all'"
+  >
+
   <link rel="stylesheet" href="styles.css">
+
+  <!-- إعدادات Supabase -->
   <script src="config.js" defer></script>
-  <script src="vendor/supabase.js" defer></script>
+
+  <!-- Supabase JS -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+    defer>
+  </script>
+
+  <!-- اتصال المشروع بقاعدة البيانات -->
   <script src="supabase/client.js" defer></script>
+
+  <!-- ملفات التطبيق -->
   <script src="income.js" defer></script>
   <script src="app.js" defer></script>
   <script src="cloud-ui.js" defer></script>
 </head>
+
 <body>
+
   <aside class="sidebar" id="sidebar">
-    <a class="brand" href="#dashboard"><span class="brand-icon" data-icon="home"></span><span>بيت<span class="brand-dot">.</span><small>كل تفاصيل بيتك، أوضح</small></span></a>
-    <button class="household-switch" id="householdButton"><span class="house-avatar" data-icon="home"></span><span><strong id="householdLabel">عائلة بسيسو</strong><small>مساحتنا المشتركة</small></span><span data-icon="chevron-down"></span></button>
+
+    <a class="brand" href="#dashboard">
+      <span class="brand-icon" data-icon="home"></span>
+
+      <span>
+        بيت<span class="brand-dot">.</span>
+        <small>كل تفاصيل بيتك، أوضح</small>
+      </span>
+    </a>
+
+    <button class="household-switch" id="householdButton">
+
+      <span class="house-avatar" data-icon="home"></span>
+
+      <span>
+        <strong id="householdLabel">عائلة بسيسو</strong>
+        <small>مساحتنا المشتركة</small>
+      </span>
+
+      <span data-icon="chevron-down"></span>
+
+    </button>
+
     <p class="nav-label">مساحة العائلة</p>
+
     <nav aria-label="القائمة الرئيسية">
-      <a href="#dashboard" data-page="dashboard"><span data-icon="grid"></span>نظرة عامة</a>
-      <a href="#expenses" data-page="expenses"><span data-icon="wallet"></span>المصاريف <span class="nav-count" id="expenseCount"></span></a>
-      <a href="#income" data-page="income"><span data-icon="plus"></span>الدخل الإضافي</a>
-      <a href="#budgets" data-page="budgets"><span data-icon="pie"></span>الميزانيات</a>
-      <a href="#members" data-page="members"><span data-icon="users"></span>أفراد العائلة</a>
-      <a href="#reports" data-page="reports"><span data-icon="chart"></span>التقارير والتحليلات</a>
-      <a href="#categories" data-page="categories"><span data-icon="layers"></span>التصنيفات</a>
+
+      <a href="#dashboard" data-page="dashboard">
+        <span data-icon="grid"></span>
+        نظرة عامة
+      </a>
+
+      <a href="#expenses" data-page="expenses">
+        <span data-icon="wallet"></span>
+        المصاريف
+        <span class="nav-count" id="expenseCount"></span>
+      </a>
+
+      <a href="#income" data-page="income">
+        <span data-icon="plus"></span>
+        الدخل الإضافي
+      </a>
+
+      <a href="#budgets" data-page="budgets">
+        <span data-icon="pie"></span>
+        الميزانيات
+      </a>
+
+      <a href="#members" data-page="members">
+        <span data-icon="users"></span>
+        أفراد العائلة
+      </a>
+
+      <a href="#reports" data-page="reports">
+        <span data-icon="chart"></span>
+        التقارير والتحليلات
+      </a>
+
+      <a href="#categories" data-page="categories">
+        <span data-icon="layers"></span>
+        التصنيفات
+      </a>
+
     </nav>
-    <div class="sidebar-bottom"><div class="sidebar-note"><span class="mini-leaf" data-icon="leaf"></span><strong>خطوات صغيرة، فرق كبير</strong><p>معرفة أين يذهب مصروفك هي أول خطوة نحو أهداف عائلتك.</p><span class="note-decoration">✧</span></div>
-    <a href="#settings" class="settings-link"><span data-icon="settings"></span>الإعدادات والنسخ الاحتياطي</a>
-    <div class="profile"><span class="avatar green">ع</span><div><strong id="profileName">عاهد</strong><small>مساحة محلية تجريبية</small></div><button class="icon-button" id="profileButton" aria-label="تبديل المستخدم"><span data-icon="chevron-down"></span></button></div></div>
+
+    <div class="sidebar-bottom">
+
+      <div class="sidebar-note">
+
+        <span class="mini-leaf" data-icon="leaf"></span>
+
+        <strong>
+          خطوات صغيرة، فرق كبير
+        </strong>
+
+        <p>
+          معرفة أين يذهب مصروفك هي أول خطوة نحو أهداف عائلتك.
+        </p>
+
+        <span class="note-decoration">✧</span>
+
+      </div>
+
+      <a href="#settings" class="settings-link">
+        <span data-icon="settings"></span>
+        الإعدادات والنسخ الاحتياطي
+      </a>
+
+      <div class="profile">
+
+        <span class="avatar green">ع</span>
+
+        <div>
+          <strong id="profileName">عاهد</strong>
+          <small>مساحة محلية تجريبية</small>
+        </div>
+
+        <button
+          class="icon-button"
+          id="profileButton"
+          aria-label="تبديل المستخدم">
+
+          <span data-icon="chevron-down"></span>
+
+        </button>
+
+      </div>
+
+    </div>
+
   </aside>
+
+
   <div class="workspace">
-    <header class="topbar"><div class="breadcrumb"><button class="icon-button mobile-menu" id="menuButton" aria-label="فتح القائمة"><span data-icon="menu"></span></button><span>مساحة العائلة</span><span class="crumb-separator">/</span><strong id="breadcrumb">نظرة عامة</strong></div><div class="topbar-actions"><span class="local-status"><i></i> محفوظ على هذا الجهاز</span><button class="icon-button notification-button" id="notificationsButton" aria-label="التنبيهات"><span data-icon="bell"></span><b id="notificationDot"></b></button><span class="topbar-divider"></span><span class="avatar green small">ع</span></div></header>
+
+    <header class="topbar">
+
+      <div class="breadcrumb">
+
+        <button
+          class="icon-button mobile-menu"
+          id="menuButton"
+          aria-label="فتح القائمة">
+
+          <span data-icon="menu"></span>
+
+        </button>
+
+        <span>مساحة العائلة</span>
+
+        <span class="crumb-separator">/</span>
+
+        <strong id="breadcrumb">
+          نظرة عامة
+        </strong>
+
+      </div>
+
+
+      <div class="topbar-actions">
+
+        <span class="local-status">
+          <i></i>
+          محفوظ على هذا الجهاز
+        </span>
+
+        <button
+          class="icon-button notification-button"
+          id="notificationsButton"
+          aria-label="التنبيهات">
+
+          <span data-icon="bell"></span>
+
+          <b id="notificationDot"></b>
+
+        </button>
+
+        <span class="topbar-divider"></span>
+
+        <span class="avatar green small">
+          ع
+        </span>
+
+      </div>
+
+    </header>
+
+
     <main id="main"></main>
-    <footer><span>بيت<span class="brand-dot">.</span> معًا، لبيت أكثر توازنًا</span><span>عائلة بسيسو · العملة: دينار أردني JOD</span></footer>
+
+
+    <footer>
+
+      <span>
+        بيت<span class="brand-dot">.</span>
+        معًا، لبيت أكثر توازنًا
+      </span>
+
+      <span>
+        عائلة بسيسو · العملة: دينار أردني JOD
+      </span>
+
+    </footer>
+
   </div>
-  <dialog id="modal"><div class="modal-heading"><div><span class="eyebrow">مساحة العائلة</span><h2 id="modalTitle"></h2></div><button class="icon-button" id="closeModal" aria-label="إغلاق"><span data-icon="x"></span></button></div><div id="modalContent"></div></dialog>
-  <div class="toast" id="toast" role="status"></div>
+
+
+  <dialog id="modal">
+
+    <div class="modal-heading">
+
+      <div>
+
+        <span class="eyebrow">
+          مساحة العائلة
+        </span>
+
+        <h2 id="modalTitle"></h2>
+
+      </div>
+
+      <button
+        class="icon-button"
+        id="closeModal"
+        aria-label="إغلاق">
+
+        <span data-icon="x"></span>
+
+      </button>
+
+    </div>
+
+    <div id="modalContent"></div>
+
+  </dialog>
+
+
+  <div
+    class="toast"
+    id="toast"
+    role="status">
+  </div>
+
 </body>
 </html>
