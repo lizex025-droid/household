@@ -1,3 +1,4 @@
 window.BAYT_CONFIG = Object.freeze({
-  mode: 'local'
+  url: "https://mrmerejgszhqspyhphcq.supabase.co",
+  publishableKey: "YOUR_KEY"
 });
