@@ -11,7 +11,7 @@
 ## على الآيفون
 
 1. افتح **Shortcuts → Automation → + → Message**.
-2. اختر المرسل **Arab Bank** من محادثة البنك نفسها، واترك **Message Contains** فارغًا حتى تصل رسائل الشراء والحوالات.
+2. اختر المرسل **Arab Bank** من محادثة البنك نفسها، واكتب **JOD** في **Message Contains** حتى تصل رسائل الشراء والحوالات.
 3. اختر **Run Immediately** ثم **New Blank Automation**.
 4. أضف **Get Contents of URL**، والصق رابط الاستقبال. اختر **Method: POST** و **Request Body: JSON**.
 5. أضف ثلاثة حقول من نوع Text:
