@@ -6,7 +6,9 @@
   "scripts": {
     "build:sql": "node scripts/build-sql.mjs",
     "test": "node --test tests/supabase-database.test.mjs",
-    "test:browser": "node tests/browser-smoke.mjs"
+    "test:browser": "node tests/browser-smoke.mjs",
+    "test:bank": "node --test tests/bank-parser.test.mjs tests/bank-database.test.mjs",
+    "test:bank:browser": "node tests/bank-browser.mjs"
   },
   "devDependencies": {
     "@electric-sql/pglite": "0.4.1"

@@ -1,5 +1,15 @@
 # بيت — Household spending
 
+## Current cloud version
+
+The current frontend connects to Supabase Auth, the household database and receipt storage. The older local-only notes below describe the optional `mode: local` version and do not describe the current production default.
+
+Arab Bank purchase SMS automation is available under Settings. Account `0119*600` is mapped to Ahed bseiso. An iPhone Shortcuts automation posts messages to the authenticated `bank-sms` Edge Function using a revocable, account-scoped key. Imports are atomic and deduplicated, use JOD precision of three decimals, and create editable expenses. See [the Arabic iPhone guide](docs/iphone-bank-automation.md). No iPhone automation is installed by deploying this repository; complete the guide on the phone.
+
+The additive SQL migration is in `supabase/migrations/`; function source is in `supabase/functions/bank-sms/`. `npm run test:bank` checks parser, permissions, precision and idempotency in disposable PGlite. Run `npm run test:bank:browser` with Playwright installed for offline UI fixtures; the test starts its own temporary server.
+
+## Historical local version notes
+
 A responsive Arabic RTL household expense application made with HTML, CSS and vanilla JavaScript. Open `index.html` directly, or serve this folder with `python -m http.server 8000` and visit `http://localhost:8000`.
 
 The Supabase database is ready in [supabase/setup.sql](supabase/setup.sql). See the [Arabic setup guide](supabase/README.md). This is a tested SQL setup artifact; it has not been deployed to the cloud. The current frontend still uses localStorage until the authentication/data integration is connected.
@@ -23,3 +33,4 @@ The interface uses IBM Plex Sans Arabic from Google Fonts when available, with l
 ## Validation
 
 `node --check app.js` checks JavaScript syntax. `tests/browser-smoke.mjs` runs real browser integration checks using Chrome's DevTools protocol and Node 22 (no npm dependencies). Start the local server at port 8000 and a dedicated test Chrome with remote debugging on port 9222, then run `node tests/browser-smoke.mjs`. Use a disposable browser profile: this test resets that browser's app data. It checks expense CRUD, quick entry, persistence, filtering, budgets, categories, member views, receipt persistence, HTML escaping, storage-quota rollback, JSON restoration, PDF generation and mobile layout. Screenshots and a sample PDF are written to `artifacts/`.
+

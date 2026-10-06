@@ -348,6 +348,24 @@
         await checked(supabase.auth.updateUser({ password }));
       },
       load,
+      async bankAccounts(householdId) {
+        return (await checked(supabase.from('bank_accounts').select('id,household_id,user_id,bank,masked_account,label,default_category_id,enabled,automation_configured').eq('household_id', householdId).order('created_at'))) || [];
+      },
+      async bankEvents(householdId) {
+        return (await checked(supabase.from('bank_sms_events').select('id,account_id,expense_id,amount,merchant,transaction_date,transaction_time,reported_balance,received_at').eq('household_id', householdId).order('received_at', { ascending: false }).limit(10))) || [];
+      },
+      async saveBankAccount(householdId, account) {
+        return checked(supabase.rpc('save_bank_account', {
+          p_household_id: householdId, p_masked_account: account.masked_account,
+          p_user_id: account.user_id, p_label: account.label,
+          p_category_id: account.default_category_id, p_account_id: account.id || null,
+          p_enabled: account.enabled
+        }));
+      },
+      async setBankKey(accountId, token = null) {
+        return checked(supabase.rpc('set_bank_automation_key', { p_account_id: accountId, p_token: token }));
+      },
+      bankEndpoint: `${config.url.replace(/\/$/, '')}/functions/v1/bank-sms`,
       async createHousehold(name, budget) {
         return checked(supabase.rpc('create_household', { p_name: name, p_budget: budget }));
       },
