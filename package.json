@@ -5,7 +5,7 @@
   "description": "Arabic household expense app and Supabase database",
   "scripts": {
     "build:sql": "node scripts/build-sql.mjs",
-    "test": "node --test tests/supabase-database.test.mjs",
+    "test": "node --test tests/*.test.mjs",
     "test:browser": "node tests/browser-smoke.mjs",
     "test:bank": "node --test tests/bank-parser.test.mjs tests/shortcut-input.test.mjs tests/bank-database.test.mjs",
     "test:bank:browser": "node tests/bank-browser.mjs"

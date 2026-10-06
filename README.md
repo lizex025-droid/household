@@ -4,7 +4,7 @@
 
 The current frontend connects to Supabase Auth, the household database and receipt storage. The older local-only notes below describe the optional `mode: local` version and do not describe the current production default.
 
-Arab Bank purchase SMS automation is available under Settings. Account `0119*600` is mapped to Ahed bseiso. An iPhone Shortcuts automation posts messages to the authenticated `bank-sms` Edge Function using a revocable, account-scoped key. Imports are atomic and deduplicated, use JOD precision of three decimals, and create editable expenses. See [the Arabic iPhone guide](docs/iphone-bank-automation.md). No iPhone automation is installed by deploying this repository; complete the guide on the phone.
+Arab Bank SMS automation is available under Settings. Account `0119*600` is mapped to Ahed bseiso. An iPhone Shortcuts automation posts messages to the authenticated `bank-sms` Edge Function using a revocable, account-scoped key. Imports are atomic and deduplicated, use JOD precision of three decimals, classify known merchants, create editable expenses, and record linked-account transfers as expenses for the sender. See [the Arabic iPhone guide](docs/iphone-bank-automation.md). No iPhone automation is installed by deploying this repository; complete the guide on the phone.
 
 The additive SQL migration is in `supabase/migrations/`; function source is in `supabase/functions/bank-sms/`. `npm run test:bank` checks parser, permissions, precision and idempotency in disposable PGlite. Run `npm run test:bank:browser` with Playwright installed for offline UI fixtures; the test starts its own temporary server.
 

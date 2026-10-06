@@ -355,7 +355,7 @@
         return (await checked(supabase.from('bank_sms_events').select('id,account_id,expense_id,amount,merchant,transaction_date,transaction_time,reported_balance,received_at').eq('household_id', householdId).order('received_at', { ascending: false }).limit(10))) || [];
       },
       async bankTransfers(householdId) {
-        return (await checked(supabase.from('bank_transfers').select('id,from_account_id,to_account_id,amount,transfer_date,reported_balance,received_at').eq('household_id', householdId).order('received_at', { ascending: false }).limit(10))) || [];
+        return (await checked(supabase.from('bank_transfers').select('id,from_account_id,to_account_id,expense_id,amount,transfer_date,reported_balance,received_at').eq('household_id', householdId).order('received_at', { ascending: false }).limit(10))) || [];
       },
       async saveBankAccount(householdId, account) {
         return checked(supabase.rpc('save_bank_account', {
