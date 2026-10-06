@@ -24,7 +24,7 @@ The **تعديل الميزانية** button defaults to changing only the selec
 
 ## Local storage and accounts
 
-Data stays in this browser's localStorage. Export backups regularly; clearing site/browser data removes local records. Receipt images have a 2 MB limit, and the browser's total storage quota may be smaller than a collection of receipts. A failed write is reported and rolled back.
+Data stays in this browser's localStorage. Export backups regularly; clearing site/browser data removes local records. Receipt images have a 10 MB per-file limit, and the browser's total storage quota may be smaller than a collection of receipts. A failed write is reported and rolled back.
 
 The account switcher demonstrates admin/member views. **It is not authentication or a security boundary.** A production multi-user service requires a backend, authenticated sessions, server-enforced household isolation and permissions, HTTPS, secure receipt storage and backup infrastructure. No passwords are collected. There is no remote synchronization, device logout, or biometric login in this local version.
 
@@ -33,4 +33,3 @@ The interface uses IBM Plex Sans Arabic from Google Fonts when available, with l
 ## Validation
 
 `node --check app.js` checks JavaScript syntax. `tests/browser-smoke.mjs` runs real browser integration checks using Chrome's DevTools protocol and Node 22 (no npm dependencies). Start the local server at port 8000 and a dedicated test Chrome with remote debugging on port 9222, then run `node tests/browser-smoke.mjs`. Use a disposable browser profile: this test resets that browser's app data. It checks expense CRUD, quick entry, persistence, filtering, budgets, categories, member views, receipt persistence, HTML escaping, storage-quota rollback, JSON restoration, PDF generation and mobile layout. Screenshots and a sample PDF are written to `artifacts/`.
-

@@ -22,7 +22,7 @@ window.__testKeys=[];
 window.BaytData={...window.BaytData,createBaytClient(){return {
  session:async()=>({user:{id:'ahed',email:'test@example.invalid'}}),onAuthChange(){},
  load:async()=>{const s=seed();return {...s,cloud:true,householdId:'home-test',budgetRows:[{scope:'household',month_start:null,amount:1400},...s.users.map(u=>({scope:'member',user_id:u.id,month_start:null,amount:u.budget})),...s.categories.map(c=>({scope:'category',category_id:c.id,month_start:null,amount:c.budget}))]};},
- bankAccounts:async()=>window.__testAccounts,bankEvents:async()=>[],
+ bankAccounts:async()=>window.__testAccounts,bankEvents:async()=>[],bankTransfers:async()=>[],
  setBankKey:async(id,token)=>{window.__testKeys.push({id,token});window.__testAccounts[0].automation_configured=!!token;},
  saveBankAccount:async(h,a)=>{window.__testAccounts[0]={...window.__testAccounts[0],...a};},
  bankEndpoint:'https://example.invalid/functions/v1/bank-sms'
@@ -42,6 +42,6 @@ window.BaytData={...window.BaytData,createBaytClient(){return {
  // Amount editing and dashboard totals retain the third decimal in local mode.
  await page.evaluate(()=>{const s=seed();s.cloud=true;s.householdId='home-test';s.budgetRows=[{scope:'household',amount:1400,month_start:null}];s.expenses=[{id:'precision-test',amount:17.722,date:localDate(),user:'ahed',category:'other',sub:'أخرى',merchant:'Test',payment:'Visa',type:'need',note:''}];state=s;location.hash='dashboard';render();});
  await page.waitForFunction(()=>document.querySelector('#availableBalanceValue')?.textContent.includes('1,382.278'));
- await page.evaluate(()=>expenseModal('precision-test'));assert.equal(await page.locator('[name="amount"]').inputValue(),'17.722');assert.equal(await page.locator('[name="amount"]').getAttribute('step'),'0.001');await page.locator('#closeModal').click();
+ await page.evaluate(()=>expenseModal('precision-test'));assert.equal(await page.locator('[name="amount"]').inputValue(),'17.722');assert.equal(await page.locator('[name="amount"]').getAttribute('step'),'0.001');assert.match(await page.locator('#expenseForm').textContent(),/حتى 10 MB/);await page.locator('#closeModal').click();
  assert.deepEqual(errors,[]);console.log('Browser checks passed: mobile settings, key generation/masking, preview, account mismatch, key cleanup, three-decimal totals and expense editing.');
 } finally {await browser.close();await new Promise(resolve=>server.close(resolve));}

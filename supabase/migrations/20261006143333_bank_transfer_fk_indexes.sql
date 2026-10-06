@@ -1,0 +1,2 @@
+create index bank_transfers_from_household_fk on public.bank_transfers(from_account_id,household_id);
+create index bank_transfers_to_household_fk on public.bank_transfers(to_account_id,household_id);

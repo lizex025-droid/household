@@ -26,10 +26,14 @@ Deno.serve(async (req: Request) => {
     if (body.dry_run !== undefined && typeof body.dry_run !== 'boolean') return reply(400, { error: 'dry_run يجب أن تكون true أو false.' });
     let parsed; try { parsed = parseArabBankSMS(body.text); } catch (error) { return reply(422, { error: (error as Error).message }); }
     const client = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, { auth: { persistSession: false, autoRefreshToken: false } });
-    const { data, error } = await client.rpc('ingest_bank_purchase', { p_token: token, p_purchase: parsed, p_dry_run: body.dry_run === true });
+    const isTransfer = parsed.type === 'transfer';
+    const { data, error } = await client.rpc(isTransfer ? 'ingest_bank_transfer' : 'ingest_bank_purchase', isTransfer
+      ? { p_token: token, p_transfer: parsed, p_dry_run: body.dry_run === true }
+      : { p_token: token, p_purchase: parsed, p_dry_run: body.dry_run === true });
     if (error) {
       if (error.code === '28000') return reply(401, { error: 'مفتاح الأتمتة ملغى أو غير صالح.' });
       if (error.message.includes('Account mismatch')) return reply(422, { error: 'الرسالة لحساب غير مربوط بهذا المفتاح.' });
+      if (error.message.includes('Destination account not linked')) return reply(422, { error: 'الحساب المستلم غير مربوط بالبيت.' });
       if (error.message.includes('Rate limit')) return reply(429, { error: 'وصلت لحد العمليات. حاول لاحقًا.' });
       return reply(503, { error: 'تعذر تسجيل العملية. أعد إرسال نفس الرسالة؛ لن تتكرر.' });
     }
