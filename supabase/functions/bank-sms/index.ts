@@ -1,5 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2.115.0';
 import { parseArabBankSMS } from './bank-parser.mjs';
+import { extractShortcutText } from './shortcut-input.mjs';
 
 const reply = (status: number, body: object) => new Response(JSON.stringify(body), {
   status, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'authorization, content-type', 'Access-Control-Allow-Methods': 'POST, OPTIONS' }
@@ -24,7 +25,7 @@ Deno.serve(async (req: Request) => {
     if (typeof token !== 'string' || !/^[a-f0-9]{64}$/.test(token)) return reply(401, { error: 'مفتاح الأتمتة غير صالح.' });
     if (typeof body.sender !== 'string' || !/^Arab\s*Bank$/i.test(body.sender.trim())) return reply(422, { error: 'مرسل البنك غير مدعوم.' });
     if (body.dry_run !== undefined && typeof body.dry_run !== 'boolean') return reply(400, { error: 'dry_run يجب أن تكون true أو false.' });
-    let parsed; try { parsed = parseArabBankSMS(body.text); } catch (error) { return reply(422, { error: (error as Error).message }); }
+    let parsed; try { parsed = parseArabBankSMS(extractShortcutText(body.text)); } catch (error) { return reply(422, { error: (error as Error).message }); }
     const client = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, { auth: { persistSession: false, autoRefreshToken: false } });
     const isTransfer = parsed.type === 'transfer';
     const { data, error } = await client.rpc(isTransfer ? 'ingest_bank_transfer' : 'ingest_bank_purchase', isTransfer
