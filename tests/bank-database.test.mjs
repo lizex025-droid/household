@@ -22,19 +22,24 @@ test('bank migration, scoped authorization, three decimals, atomic ingestion and
  create view public.monthly_spending with(security_invoker=true) as select household_id,sum(amount) from public.expenses group by household_id;
  create function private.can_write_expense(h uuid,u uuid) returns boolean language sql security definer set search_path='' as $$ select exists(select 1 from public.household_members where household_id=h and user_id=auth.uid() and (user_id=u or role='admin')) $$;
  grant usage on schema private to authenticated;grant execute on function private.can_write_expense(uuid,uuid) to authenticated;`);
- const home=randomUUID(),owner=randomUUID(),member=randomUUID(),najwa=randomUUID(),stranger=randomUUID(),otherHome=randomUUID(),category=randomUUID(),food=randomUUID(),transport=randomUUID(),shopping=randomUUID(),education=randomUUID(),monthly=randomUUID(),sub=randomUUID(),foodSub=randomUUID(),taxiSub=randomUUID(),shoppingSub=randomUUID(),stationerySub=randomUUID(),monthlySub=randomUUID();
- await db.query('insert into public.profiles values ($1,$2),($3,$4),($5,$6),($7,$8)',[owner,'Ahed bseiso',member,'Tatiana bseiso',najwa,'najwa bseiso',stranger,'Other Admin']);
+ const home=randomUUID(),owner=randomUUID(),member=randomUUID(),memberTwo=randomUUID(),stranger=randomUUID(),otherHome=randomUUID(),category=randomUUID(),food=randomUUID(),transport=randomUUID(),shopping=randomUUID(),education=randomUUID(),monthly=randomUUID(),sub=randomUUID(),foodSub=randomUUID(),taxiSub=randomUUID(),shoppingSub=randomUUID(),stationerySub=randomUUID(),monthlySub=randomUUID();
+ await db.query('insert into public.profiles values ($1,$2),($3,$4),($5,$6),($7,$8)',[owner,'Demo Admin',member,'Demo Member One',memberTwo,'Demo Member Two',stranger,'Other Admin']);
  await db.query('insert into public.households values($1,$2),($3,$4)',[home,'Test',otherHome,'Other']);
- await db.query("insert into public.household_members values($1,$2,'admin'),($1,$3,'member'),($1,$4,'member'),($5,$6,'admin')",[home,owner,member,najwa,otherHome,stranger]);
+ await db.query("insert into public.household_members values($1,$2,'admin'),($1,$3,'member'),($1,$4,'member'),($5,$6,'admin')",[home,owner,member,memberTwo,otherHome,stranger]);
  await db.query("insert into public.categories(id,household_id,name,icon) values($1,$2,'أخرى','layers'),($3,$2,'الأكل','food'),($4,$2,'المواصلات','car'),($5,$2,'التسوق','bag'),($6,$2,'التعليم','book'),($7,$2,'مصروف شهري','wallet')",[category,home,food,transport,shopping,education,monthly]);
  await db.query("insert into public.subcategories(id,household_id,category_id,name) values($1,$2,$3,'أخرى'),($4,$2,$5,'سوبرماركت'),($6,$2,$7,'Uber / Taxi'),($8,$2,$9,'مستلزمات شخصية'),($10,$2,$11,'قرطاسية'),($12,$2,$13,'مصروف شهري')",[sub,home,category,foodSub,food,taxiSub,transport,shoppingSub,shopping,stationerySub,education,monthlySub,monthly]);
  const migrations=new URL('../supabase/migrations/',import.meta.url);
  const bankMigrations=readdirSync(migrations).filter(name=>name.endsWith('.sql')&&(name.includes('bank_sms_automation')||name.includes('bank_transfers_multi_account')||name.includes('bank_expense_categorization'))).sort();
  for(const migration of bankMigrations)await db.exec(readFileSync(new URL(migration,migrations),'utf8'));
+ // Synthetic bank accounts belong in test fixtures, not production migrations.
+ await db.query(
+  'insert into public.bank_accounts(household_id,user_id,masked_account,label,default_category_id) values($1,$2,$3,$4,$5),($1,$6,$7,$8,$5),($1,$9,$10,$11,$5)',
+  [home,owner,'1234*567','Demo Admin bank',category,member,'1234*568','Demo Member bank',memberTwo,'1234*569','Demo Member Two bank']
+ );
  const accounts=(await db.query('select id,masked_account,user_id from public.bank_accounts order by masked_account')).rows;
- assert.deepEqual(accounts.map(a=>a.masked_account),['0119*600','0119*603','0119*604']);
- const account=accounts.find(a=>a.masked_account==='0119*600').id;
- const token='a'.repeat(64),newToken='b'.repeat(64),purchase=parseArabBankSMS('JO You have a purchase transaction on account 0119*600 from SAMA AL DAHYYA MARKET amount JOD 17.722 on 06/10/2026 12:56 . Balance JOD 20.270 .');
+ assert.deepEqual(accounts.map(a=>a.masked_account),['1234*567','1234*568','1234*569']);
+ const account=accounts.find(a=>a.masked_account==='1234*567').id;
+ const token='a'.repeat(64),newToken='b'.repeat(64),purchase=parseArabBankSMS('JO You have a purchase transaction on account 1234*567 from SAMA AL DAHYYA MARKET amount JOD 17.722 on 06/10/2026 12:56 . Balance JOD 200.270 .');
  const claim=async id=>db.query("select set_config('request.jwt.claim.sub',$1,false)",[id]);
  await claim(owner);
  await db.query('select public.set_bank_automation_key($1,$2)',[account,token]);
@@ -46,14 +51,14 @@ test('bank migration, scoped authorization, three decimals, atomic ingestion and
  assert.equal((await db.query('select category_id from public.expenses')).rows[0].category_id,food);
  assert.equal((await ingest({...purchase,merchant:'sama al dahyya market'})).status,'duplicate');
  assert.equal((await ingest({...purchase,balance:'2.548'})).status,'recorded');
- const najwaPurchase=await ingest({...purchase,account:'0119*604',merchant:'NAJWA TEST',balance:'1.425'});
- assert.equal(najwaPurchase.status,'recorded');
- assert.equal((await db.query('select user_id from public.expenses where id=$1',[najwaPurchase.expense_id])).rows[0].user_id,najwa);
+ const memberTwoPurchase=await ingest({...purchase,account:'1234*569',merchant:'MEMBER TWO TEST',balance:'1.425'});
+ assert.equal(memberTwoPurchase.status,'recorded');
+ assert.equal((await db.query('select user_id from public.expenses where id=$1',[memberTwoPurchase.expense_id])).rows[0].user_id,memberTwo);
  const careemPurchase=await ingest({...purchase,merchant:'CAREEM RIDE',time:'13:15',balance:'0.500'});
  assert.equal((await db.query('select category_id from public.expenses where id=$1',[careemPurchase.expense_id])).rows[0].category_id,transport);
  assert.equal((await db.query("select category_id from private.resolve_bank_expense_category($1,'AR JAN STATIONERY')",[home])).rows[0].category_id,education);
  assert.equal((await db.query("select category_id from private.resolve_bank_expense_category($1,'MILANO ELECTRONICS')",[home])).rows[0].category_id,shopping);
- const transfer=parseArabBankSMS('JO JOD 1.000 has been debited from 0119*600 and has been credited to 0119*603 on 10/06/2026 . Balance JOD 12.053');
+ const transfer=parseArabBankSMS('JO JOD 1.000 has been debited from 1234*567 and has been credited to 1234*568 on 10/06/2026 . Balance JOD 12.053');
  const ingestTransfer=async(p=transfer,t=token,dry=false)=>(await db.query('select public.ingest_bank_transfer($1,$2::jsonb,$3) as result',[t,JSON.stringify(p),dry])).rows[0].result;
  assert.equal((await ingestTransfer(transfer,token,true)).status,'preview');
  const savedTransfer=await ingestTransfer();assert.equal(savedTransfer.status,'recorded');
@@ -61,7 +66,7 @@ test('bank migration, scoped authorization, three decimals, atomic ingestion and
  assert.equal((await db.query('select count(*)::int as n from public.bank_transfers')).rows[0].n,1);
  const transferExpense=(await db.query('select e.user_id,e.category_id,e.payment_method from public.bank_transfers bt join public.expenses e on e.id=bt.expense_id where bt.id=$1',[savedTransfer.transfer_id])).rows[0];
  assert.equal(transferExpense.user_id,owner);assert.equal(transferExpense.category_id,monthly);assert.equal(transferExpense.payment_method,'تحويل بنكي');
- const reverseTransfer=await ingestTransfer({...transfer,fromAccount:'0119*603',toAccount:'0119*600',amount:'2.000',balance:'10.053'});
+ const reverseTransfer=await ingestTransfer({...transfer,fromAccount:'1234*568',toAccount:'1234*567',amount:'2.000',balance:'10.053'});
  assert.equal((await db.query('select e.user_id from public.bank_transfers bt join public.expenses e on e.id=bt.expense_id where bt.id=$1',[reverseTransfer.transfer_id])).rows[0].user_id,member);
  await assert.rejects(ingest({...purchase,amount:'1.1234'}),/Invalid purchase/);
  await assert.rejects(ingest(purchase,'c'.repeat(64)),/Invalid automation key/);

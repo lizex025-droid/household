@@ -176,16 +176,4 @@ returns jsonb language sql security invoker set search_path='' as $$ select priv
 revoke all on function public.ingest_bank_purchase(text,jsonb,boolean) from public,anon,authenticated;
 grant execute on function public.ingest_bank_purchase(text,jsonb,boolean) to service_role;
 
--- Explicitly authorized mapping. Resolve IDs from existing membership, not literals.
-do $$
-declare owner_id uuid; home_id uuid; category_id uuid;
-begin
- if (select count(*) from public.profiles p join public.household_members m on m.user_id=p.id where lower(btrim(p.display_name))='ahed bseiso')<>1 then
-  raise exception 'Expected exactly one Ahed bseiso membership';
- end if;
- select p.id,m.household_id into owner_id,home_id from public.profiles p join public.household_members m on m.user_id=p.id where lower(btrim(p.display_name))='ahed bseiso';
- select c.id into category_id from public.categories c where c.household_id=home_id and c.name='أخرى' order by c.created_at limit 1;
- if category_id is null then raise exception 'Fallback category missing'; end if;
- insert into public.bank_accounts(household_id,user_id,masked_account,label,default_category_id)
-  values(home_id,owner_id,'0119*600','حساب عاهد · Arab Bank',category_id) on conflict(household_id,bank,masked_account) do nothing;
-end $$;
+-- No personal bank account records should be seeded by this migration.

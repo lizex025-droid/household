@@ -128,23 +128,4 @@ returns jsonb language sql security invoker set search_path='' as $$ select priv
 revoke all on function public.ingest_bank_transfer(text,jsonb,boolean) from public,anon,authenticated;
 grant execute on function public.ingest_bank_transfer(text,jsonb,boolean) to service_role;
 
-do $$
-declare home_id uuid; category_id uuid; owner_id uuid; mapping record;
-begin
- select m.household_id into strict home_id from public.profiles p join public.household_members m on m.user_id=p.id
-  where lower(btrim(p.display_name))='ahed bseiso';
- select c.id into category_id from public.categories c where c.household_id=home_id and c.name='أخرى' order by c.created_at limit 1;
- if category_id is null then raise exception 'Fallback category missing'; end if;
- for mapping in select * from (values
-  ('tatiana bseiso','0119*603','حساب Tatiana · Arab Bank'),
-  ('najwa bseiso','0119*604','حساب Najwa · Arab Bank')
- ) as v(display_name,masked_account,label)
- loop
-  owner_id:=null;
-  select p.id into strict owner_id from public.profiles p join public.household_members m on m.user_id=p.id
-   where m.household_id=home_id and lower(btrim(p.display_name))=mapping.display_name;
-  insert into public.bank_accounts(household_id,user_id,masked_account,label,default_category_id,enabled)
-   values(home_id,owner_id,mapping.masked_account,mapping.label,category_id,true)
-   on conflict(household_id,bank,masked_account) do update set user_id=excluded.user_id,label=excluded.label,default_category_id=excluded.default_category_id,enabled=true;
- end loop;
-end $$;
+-- Bank accounts are configured separately by authorized users, not seeded here.
