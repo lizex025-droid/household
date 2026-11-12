@@ -8,3 +8,12 @@ node_modules/
 supabase/config.js
 supabase/.temp/
 supabase/.branches/
+# Credentials and private local data
+*.pem
+*.p12
+*.key
+*.sqlite
+*.db
+*.dump
+secrets/
+credentials/

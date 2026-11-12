@@ -12,12 +12,12 @@ const uid=()=>globalThis.crypto?.randomUUID?.()||`${Date.now()}-${Math.random().
 const KEY='bayt-household-bseiso-v1';
 const colors=['#39785e','#91aa7a','#d2ba88','#9faabd','#c0cba9','#ba9ca1','#9cbcb2','#c8aa88'];
 const initialCategories=[
- ['housing','الإيجار','home',275,['إيجار','صيانة','أثاث','أدوات منزلية']],
- ['food','الأكل','food',600,['سوبرماركت','مطاعم','طلبات','قهوة','حلويات']],
- ['internet','الإنترنت','bolt',50,['اشتراك الإنترنت']],
- ['utilities','الكهرباء والمياه','bolt',50,['كهرباء','مياه']],
- ['tatiana-gym','نادي تتيانا','heart',135,['اشتراك نادي تتيانا']],
- ['ahed-gym','نادي عاهد','heart',50,['اشتراك نادي عاهد']],
+ ['housing','الإيجار','home',400,['إيجار','صيانة','أثاث','أدوات منزلية']],
+ ['food','الأكل','food',450,['سوبرماركت','مطاعم','طلبات','قهوة','حلويات']],
+ ['internet','الإنترنت','bolt',40,['اشتراك الإنترنت']],
+ ['utilities','الكهرباء والمياه','bolt',60,['كهرباء','مياه']],
+ ['fitness','الرياضة','heart',60,['اشتراك النادي']],
+ ['wellness','العناية الشخصية','heart',40,['اشتراك رياضي']],
  ['transport','المواصلات','car',0,['بنزين','Uber / Taxi','صيانة سيارة','ترخيص','تأمين','مواقف']],
  ['bills','فواتير أخرى','bolt',0,['هاتف','غاز']],
  ['shopping','التسوق','bag',0,['ملابس','أحذية','إلكترونيات','مستلزمات شخصية']],
@@ -32,14 +32,14 @@ const initialCategories=[
 ].map((c,i)=>({id:c[0],name:c[1],icon:c[2],budget:c[3],subs:c[4],color:colors[i%colors.length]}));
 function seed(){
  const users=[
-  {id:'hani',name:'هاني',short:'هاني',role:'member',budget:0,email:'',color:'#e5ede0',ink:'#738564'},
-  {id:'anas',name:'انس',short:'انس',role:'member',budget:0,email:'',color:'#e7eaf2',ink:'#8b96ad'},
-  {id:'najwa',name:'نجوى',short:'نجوى',role:'member',budget:0,email:'',color:'#f4e9de',ink:'#b09578'},
-  {id:'tatiana',name:'تتيانا',short:'تتيانا',role:'member',budget:135,email:'',color:'#f0e4ec',ink:'#ad819c'},
-  {id:'nahid',name:'ناهض',short:'ناهض',role:'member',budget:0,email:'',color:'#e2eeed',ink:'#699691'},
-  {id:'ahed',name:'عاهد',short:'عاهد',role:'admin',budget:50,email:'bseisoahed@gmail.com',color:'#e5ede0',ink:'#738564'}
+  {id:'demo-member-1',name:'عضو ١',short:'١',role:'member',budget:0,email:'',color:'#e5ede0',ink:'#738564'},
+  {id:'demo-member-2',name:'عضو ٢',short:'٢',role:'member',budget:0,email:'',color:'#e7eaf2',ink:'#8b96ad'},
+  {id:'demo-member-3',name:'عضو ٣',short:'٣',role:'member',budget:0,email:'',color:'#f4e9de',ink:'#b09578'},
+  {id:'demo-member-4',name:'عضو ٤',short:'٤',role:'member',budget:0,email:'',color:'#f0e4ec',ink:'#ad819c'},
+  {id:'demo-member-5',name:'عضو ٥',short:'٥',role:'member',budget:0,email:'',color:'#e2eeed',ink:'#699691'},
+  {id:'demo-admin',name:'مدير العائلة',short:'م',role:'admin',budget:0,email:'',color:'#e5ede0',ink:'#738564'}
  ];
- return {version:1,household:'عائلة بسيسو',budget:1400,currentUser:'ahed',users,
+ return {version:1,household:'عائلة تجريبية',budget:1500,currentUser:'demo-admin',users,
   categories:initialCategories.map(c=>({...c,subs:[...c.subs]})),expenses:[],incomes:[],monthlyBudgets:{},
   favorites:Object.fromEntries(users.map(u=>[u.id,[]]))};
 }
