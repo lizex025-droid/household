@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { extractShortcutText } from '../supabase/functions/bank-sms/shortcut-input.mjs';
 
-const sms = 'JO\nJOD 1.700 has been debited from 0119*600 and has been credited to 0119*603 on 10/06/2026 . Balance JOD 22.753';
+const sms = 'JO\nJOD 1.700 has been debited from 1234*567 and has been credited to 1234*568 on 10/06/2026 . Balance JOD 22.753';
 
 test('accepts direct iOS Message.Content text', () => {
   assert.equal(extractShortcutText(sms), sms);
